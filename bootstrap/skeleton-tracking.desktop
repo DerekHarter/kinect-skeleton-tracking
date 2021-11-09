@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Kinect Skeleton Tracking Experiment Data Sensor
+GenericName=SkeletonTracking
+Exec=/home/dash/kinect-skeleton-tracking/exp/skeleton-tracking
+Icon=/home/dash/kinect-skeleton-tracking/exp/icon/skeleton-tracking.png
+Terminal=true
+NoDisplay=false
+type=Application
+Categories=Science;
