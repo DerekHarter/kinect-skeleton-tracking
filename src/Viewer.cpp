@@ -96,6 +96,19 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 {
 	m_pTexMap = NULL;
 
+	// create file to save skeleton data output
+	cout << "Enter Participant Number: ";
+	string participantNumber;
+	cin >> participantNumber;
+
+	outputFileName = "../data/" + participantNumber + "_task-switching-replication_XXXX_XXX_XXXX.csv";
+	outputFile.open(outputFileName.c_str());
+	if (not outputFile)
+	{
+	  cerr << "Error: could not open output data file: " << outputFileName << endl;
+	  exit(0);
+	}    
+
 	openni::Status rc = openni::OpenNI::initialize();
 	if (rc != openni::STATUS_OK)
 	{
@@ -126,14 +139,6 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 	{
 		return openni::STATUS_ERROR;
 	}
-
-	// create file to save skeleton data output
-	outputFile.open(outputFileName.c_str());
-	if (not outputFile)
-	{
-	  cerr << "Error: could not open output data file: " << outputFileName << endl;
-	  exit(0);
-	}    
 
 	return InitOpenGL(argc, argv);
 
@@ -362,7 +367,7 @@ void SaveSkeletonData(nite::UserTracker* pUserTracker, const nite::UserData& use
   int userId = userData.getId();
 
   outputFile << userId << ", " <<  millisecondsSinceEpoch;
-  for (jointType = nite::JOINT_HEAD; jointType < nite::JOINT_RIGHT_FOOT; jointType = nite::JointType(int(jointType) + 1) )
+  for (jointType = nite::JOINT_HEAD; jointType <= nite::JOINT_RIGHT_FOOT; jointType = nite::JointType(int(jointType) + 1) )
   {
     nite::SkeletonJoint joint = userSkeleton.getJoint(jointType);
     nite::Point3f point = joint.getPosition();
