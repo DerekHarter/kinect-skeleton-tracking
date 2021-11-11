@@ -14,8 +14,10 @@
 #include "Viewer.h"
 #include <ctime>
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -50,7 +52,7 @@ bool g_drawFrameId = false;
 
 int g_nXRes = 0, g_nYRes = 0;
 
-string outputFileName = "skeleton_data.csv";
+//string outputFileName = "skeleton_data.csv";
 ofstream outputFile;
 
 // time to hold in pose to exit program. In milliseconds.
@@ -101,11 +103,22 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 	string participantNumber;
 	cin >> participantNumber;
 
-	outputFileName = "../data/" + participantNumber + "_task-switching-replication_XXXX_XXX_XXXX.csv";
-	outputFile.open(outputFileName.c_str());
+	auto t = time(nullptr);
+	auto tm = *localtime(&t);
+	ostringstream outputFileName;
+	
+	//outputFileName = "../data/" + participantNumber + "_task-switching-replication_XXXX_XXX_XXXX.csv";
+	outputFileName << "../data/"
+		       << participantNumber
+		       << "_task-switching-replication_"
+		       << put_time(&tm, "%Y_%b_%d_%H%M")
+		       << ".csv";
+	  
+	outputFile.open(outputFileName.str().c_str());
+	
 	if (not outputFile)
 	{
-	  cerr << "Error: could not open output data file: " << outputFileName << endl;
+	  cerr << "Error: could not open output data file: " << outputFileName.str() << endl;
 	  exit(0);
 	}    
 
