@@ -8,7 +8,7 @@
 ##              paper generation.
 ##
 .PHONY : all
-all : data
+all : data tables papers
 
 
 ## data       : Perform data cleaning and data
@@ -62,7 +62,8 @@ backup :
 .PHONY : clean
 clean  :
 	#cd data && $(MAKE) clean  && cd ../tables && $(MAKE) clean && cd ../figures && $(MAKE) clean && cd ../papers && $(MAKE) clean
-	cd data
+	cd data && $(MAKE) clean  && cd ../tables && $(MAKE) clean && cd ../papers && $(MAKE) clean
+
 
 ## help       : Get all build targets supported by this build.
 ##

@@ -4,11 +4,10 @@ SRC_DIR := .
 
 
 # raw data sources
-task_switching_replication_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9]_*_*_*_*.csv)
-task_switching_replication_raw_meta = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9]_*_*_*_*.xlsx)
+task_switching_skeleton_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9][0-9]_*_*_*_*_*.csv)
 
 # extracted / cleaned targets
-target_data_files =
+target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv
 
 
 ## List of all valid targets in this sub project:                                             
@@ -20,12 +19,12 @@ target_data_files =
 all : $(target_data_files)                                                                       
 
 
-## task-switching-replication.csv
+## task-switching-skeleton.csv
 ##            : Create extracted and cleaned data from all
-##              subject trials of stroop replication
-##              experiments.
+##              subject trials of task switching replication
+##              skeleton tracking data
 ##
-${DATA_DIR}/task-switching-replication.csv : ${SRC_DIR}/extract-task-switching-replication-data.py ${task_switching_replication_raw_trials} ${task_switching_replication_raw_meta}
+${DATA_DIR}/task-switching-skeleton-summary.csv : ${SRC_DIR}/extract-task-switching-skeleton-summary.py ${task_switching_skeleton_raw_trials}
 	python $< --output $@                                                                 
 
 
