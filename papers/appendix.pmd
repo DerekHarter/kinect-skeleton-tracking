@@ -29,9 +29,19 @@ abstract: |
 
 \input{../tables/table-subject-summary.tex}
 
+Some text here.
+
+\begin{table}
+\caption{Fit of logistic regression model with response (correct or incorrect) as the dependent variable, and average torso joint movement leading up to the response as the independent variable.}
+\label{table-joint-logit-model-summary}
+\input{../tables/table-joint-logit-model-summary.tex}
+\end{table}
 
 ## Figures {-}
 
+![Reaction time of participants plotted as a function of average joint movement (displacement) captured from Kinect tracking sensor.  Correct and incorrect responses are indicated by marker color and shape. \label{figure-torso-reaction-time}](../figures/figure-torso-reaction-time){ width=100% }
+
+![Response (correct or incorrect) as a function of average joint movement (displacement) captured from Kinect tracking sensor.\label{figure-torso-response}](../figures/figure-torso-response){ width=100% }
 
 
 \printbibliography[heading=bibintoc]

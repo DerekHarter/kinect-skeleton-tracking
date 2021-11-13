@@ -43,10 +43,6 @@ feature_names = [
     'jointRightShoulderY',
     'jointRightShoulderZ',
     
-    'jointTorsoX',
-    'jointTorsoY',
-    'jointTorsoZ',
-    
     'jointLeftElbowX',
     'jointLeftElbowY',
     'jointLeftElbowZ',
@@ -62,6 +58,10 @@ feature_names = [
     'jointRightHandX',
     'jointRightHandY',
     'jointRightHandZ',
+    
+    'jointTorsoX',
+    'jointTorsoY',
+    'jointTorsoZ',
     
     'jointLeftHipX',
     'jointLeftHipY',
@@ -135,10 +135,6 @@ def extract_task_switching_skeleton_data():
     raw_data_file_list = glob.glob(raw_data_pattern)
     raw_data_file_list.sort()
     for raw_data_file in raw_data_file_list:
-        # ignore csv files of trial information
-        if 'trials' in raw_data_file:
-            continue
-
         print('processing file: ', raw_data_file)
 
         # raw skeleton tracking data file, process it
@@ -217,8 +213,8 @@ def main():
     """
     # parse command line arguments
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--output', default='stroop-replication.csv',
-                        help='name of output data file, defaults to stroop-replication.csv')
+    parser.add_argument('--output', default='task-switching-skeleton-summary.csv',
+                        help='name of output data file, defaults to task-switching-skeleton-summary.csv')
     args = parser.parse_args()
 
     # extract the trials and experiment data from the raw files

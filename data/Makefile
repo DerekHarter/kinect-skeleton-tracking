@@ -7,7 +7,7 @@ SRC_DIR := .
 task_switching_skeleton_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9][0-9]_*_*_*_*_*.csv)
 
 # extracted / cleaned targets
-target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv
+target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv ${DATA_DIR}/response-joint-displacements.csv
 
 
 ## List of all valid targets in this sub project:                                             
@@ -25,6 +25,15 @@ all : $(target_data_files)
 ##              skeleton tracking data
 ##
 ${DATA_DIR}/task-switching-skeleton-summary.csv : ${SRC_DIR}/extract-task-switching-skeleton-summary.py ${task_switching_skeleton_raw_trials}
+	python $< --output $@                                                                 
+
+
+## response-joint-displacements.csv
+##            : Extract joint displacement (or movements) from kinect
+##              joint position information for each subject response made
+##              in a PsychoPy experiment file.
+##
+${DATA_DIR}/response-joint-displacements.csv : ${SRC_DIR}/extract-response-joint-displacements.py ${task_switching_skeleton_raw_trials} task-switching-replication.csv
 	python $< --output $@                                                                 
 
 

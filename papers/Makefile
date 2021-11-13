@@ -34,8 +34,8 @@ all : $(build)/appendix.pdf
 ##
 appendix-docs := appendix.tex
 appendix-bibs := task-switching-replication.bib
-appendix-figures := 
-appendix-tables := ../tables/table-subject-summary.tex
+appendix-figures := ../figures/figure-torso-reaction-time.png ../figures/figure-torso-response.png
+appendix-tables := ../tables/table-subject-summary.tex ../tables/table-joint-logit-model-summary.tex
 appendix-src := $(appendix-docs) $(appendix-bibs) $(appendix-figures) $(appendix-tables)
 appendix-dest := $(addprefix $(cache)/, $(appendix-src))
 $(cache)/appendix.tex : PANDOC_FLAGS+=-s -N
