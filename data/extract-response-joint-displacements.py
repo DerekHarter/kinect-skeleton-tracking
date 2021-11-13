@@ -34,73 +34,6 @@ features of interest.
 """
 
 
-# final features desired, and order we desire them in
-feature_names = [
-    'userId',
-    'utcMillisecondsSinceEpoch',
-    
-    'jointHeadX',
-    'jointHeadY',
-    'jointHeadZ',
-
-    'jointNeckX',
-    'jointNeckY',
-    'jointNeckZ',
-
-    'jointLeftShoulderX',
-    'jointLeftShoulderY',
-    'jointLeftShoulderZ',
-    
-    'jointRightShoulderX',
-    'jointRightShoulderY',
-    'jointRightShoulderZ',
-    
-    'jointLeftElbowX',
-    'jointLeftElbowY',
-    'jointLeftElbowZ',
-    
-    'jointRightElbowX',
-    'jointRightElbowY',
-    'jointRightElbowZ',
-    
-    'jointLeftHandX',
-    'jointLeftHandY',
-    'jointLeftHandZ',
-    
-    'jointRightHandX',
-    'jointRightHandY',
-    'jointRightHandZ',
-    
-    'jointTorsoX',
-    'jointTorsoY',
-    'jointTorsoZ',
-    
-    'jointLeftHipX',
-    'jointLeftHipY',
-    'jointLeftHipZ',
-    
-    'jointRightHipX',
-    'jointRightHipY',
-    'jointRightHipZ',
-    
-    'jointLeftKneeX',
-    'jointLeftKneeY',
-    'jointLeftKneeZ',
-    
-    'jointRightKneeX',
-    'jointRightKneeY',
-    'jointRightKneeZ',
-    
-    'jointLeftFootX',
-    'jointLeftFootY',
-    'jointLeftFootZ',
-    
-    'jointRightFootX',
-    'jointRightFootY',
-    'jointRightFootZ',
-]
-
-
 def get_joint_df(participant):
     """
     Get the kinect joint experiment data for the given participant.
@@ -121,7 +54,8 @@ def get_joint_df(participant):
     # load the file into a df if we found it
     data_file = file_list[0]
     print("kinect joint data file: ", data_file)
-    joint_df = pd.read_csv(data_file, names=feature_names)
+    #joint_df = pd.read_csv(data_file, names=feature_names)
+    joint_df = pd.read_csv(data_file)
 
     # convert utc time stamp to seconds so we have same units as in the
     # subject response data

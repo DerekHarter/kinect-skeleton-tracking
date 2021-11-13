@@ -22,72 +22,6 @@ line, and normalized feature/column names.
 """
 
 
-# final features desired, and order we desire them in
-feature_names = [
-    'userId',
-    'utcMillisecondsSinceEpoch',
-    
-    'jointHeadX',
-    'jointHeadY',
-    'jointHeadZ',
-
-    'jointNeckX',
-    'jointNeckY',
-    'jointNeckZ',
-
-    'jointLeftShoulderX',
-    'jointLeftShoulderY',
-    'jointLeftShoulderZ',
-    
-    'jointRightShoulderX',
-    'jointRightShoulderY',
-    'jointRightShoulderZ',
-    
-    'jointLeftElbowX',
-    'jointLeftElbowY',
-    'jointLeftElbowZ',
-    
-    'jointRightElbowX',
-    'jointRightElbowY',
-    'jointRightElbowZ',
-    
-    'jointLeftHandX',
-    'jointLeftHandY',
-    'jointLeftHandZ',
-    
-    'jointRightHandX',
-    'jointRightHandY',
-    'jointRightHandZ',
-    
-    'jointTorsoX',
-    'jointTorsoY',
-    'jointTorsoZ',
-    
-    'jointLeftHipX',
-    'jointLeftHipY',
-    'jointLeftHipZ',
-    
-    'jointRightHipX',
-    'jointRightHipY',
-    'jointRightHipZ',
-    
-    'jointLeftKneeX',
-    'jointLeftKneeY',
-    'jointLeftKneeZ',
-    
-    'jointRightKneeX',
-    'jointRightKneeY',
-    'jointRightKneeZ',
-    
-    'jointLeftFootX',
-    'jointLeftFootY',
-    'jointLeftFootZ',
-    
-    'jointRightFootX',
-    'jointRightFootY',
-    'jointRightFootZ',
-]
-
 def compute_distance_head(row):
     """Helper function to apply to dataframe rows, will compute 
     head joint distance moved between this and next reported head 
@@ -135,15 +69,16 @@ def extract_task_switching_skeleton_data():
     raw_data_file_list = glob.glob(raw_data_pattern)
     raw_data_file_list.sort()
     for raw_data_file in raw_data_file_list:
-        print('processing file: ', raw_data_file)
+        print('kinect joint data file: ', raw_data_file)
 
         # raw skeleton tracking data file, process it
         # we get the subject id from the data file name
         subject_id = int(os.path.basename(raw_data_file).split('_')[0])
-        print('subject id: ', subject_id)
+        print('Processing participant: %04d' % subject_id)
 
         # load raw data into a dataframe
-        subject_df = pd.read_csv(raw_data_file, names=feature_names)
+        #subject_df = pd.read_csv(raw_data_file, names=feature_names)
+        subject_df = pd.read_csv(raw_data_file)
         num_samples = subject_df.shape[0]
         start_time = subject_df.utcMillisecondsSinceEpoch[0]
         start_date = pd.to_datetime(start_time, unit='ms')

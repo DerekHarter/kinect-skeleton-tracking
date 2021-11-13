@@ -122,6 +122,27 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 	  exit(0);
 	}    
 
+	// add a header to the output file for data documentation
+	// NOTE: the order of joint outputs needs to correspond to the JointType enumerated
+	//   type found in NiteEnums.h header file.  We iterate through the joints,
+	//   saving the x,y,z position of each, in the order defined in this enum.
+	outputFile << "userId,utcMillisecondsSinceEpoch,"
+		   << "jointHeadX,jointHeadY,jointHeadZ,"
+		   << "jointNeckX,jointNeckY,jointNeckZ,"
+		   << "jointLeftShoulderX,jointLeftShoulderY,jointLeftShoulderZ,"
+		   << "jointRightShoulderX,jointRightShoulderY,jointRightShoulderZ,"
+		   << "jointLeftElbowX,jointLeftElbowY,jointLeftElbowZ,"
+		   << "jointRightElbowX,jointRightElbowY,jointRightElbowZ,"
+		   << "jointLeftHandX,jointLeftHandY,jointLeftHandZ,"
+		   << "jointRightHandX,jointRightHandY,jointRightHandZ,"
+		   << "jointTorsoX,jointTorsoY,jointTorsoZ,"
+		   << "jointLeftHipX,jointLeftHipY,jointLeftHipZ,"
+		   << "jointRightHipX,jointRightHipY,jointRightHipZ,"
+		   << "jointLeftKneeX,jointLeftKneeY,jointLeftKneeZ,"
+		   << "jointRightKneeX,jointRightKneeY,jointRightKneeZ,"
+		   << "jointLeftFootX,jointLeftFootY,jointLeftFootZ,"
+		   << "jointRightFootX,jointRightFootY,jointRightFootZ"
+		   << endl;
 	openni::Status rc = openni::OpenNI::initialize();
 	if (rc != openni::STATUS_OK)
 	{
