@@ -48,7 +48,7 @@ def create_torso_reaction_time_figure(data_file, output_file):
         data=df);
 
     # clip x axis to better see bulk of data
-    plt.xlim([0.0, 10.0])
+    #plt.xlim([0.0, 10.0])
 
     # add figure labels
     plt.xlabel('Average Joint Movement (torso joint)')

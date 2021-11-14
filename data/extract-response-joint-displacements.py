@@ -34,6 +34,25 @@ features of interest.
 """
 
 
+joint_list = [
+    'jointHead',
+    'jointNeck',
+    'jointLeftShoulder',
+    'jointRightShoulder',
+    'jointLeftElbow',
+    'jointRightElbow',
+    'jointLeftHand',
+    'jointRightHand',
+    'jointTorso',
+    'jointLeftHip',
+    'jointRightHip',
+    'jointLeftKnee',
+    'jointRightKnee',
+    'jointLeftFoot',
+    'jointRightFoot'
+]
+
+
 def get_joint_df(participant):
     """
     Get the kinect joint experiment data for the given participant.
@@ -46,15 +65,15 @@ def get_joint_df(participant):
        data file name to open with the corresponding kinect joint data.
     """
     # try and find the file for this participant
-    file_pattern = data_dir + "/" + "%04d_task-switching-replication_*.csv" % participant
+    file_pattern = data_dir + "/" + "%04d_*-joint-positions-displacements.csv" % participant
     file_list = glob.glob(file_pattern)
     if len(file_list) != 1:
         print("Error: did not find exptected file or got multiple files for pattern: <", file_pattern, ">")
+        sys.exit(0)
 
     # load the file into a df if we found it
     data_file = file_list[0]
     print("kinect joint data file: ", data_file)
-    #joint_df = pd.read_csv(data_file, names=feature_names)
     joint_df = pd.read_csv(data_file)
 
     # convert utc time stamp to seconds so we have same units as in the
@@ -62,32 +81,6 @@ def get_joint_df(participant):
     joint_df['utcTime'] = joint_df.utcMillisecondsSinceEpoch / 1000.0
     
     return joint_df
-
-
-def compute_distance_head(row):
-    """Helper function to apply to dataframe rows, will compute 
-    head joint distance moved between this and next reported head 
-    joint position.
-    """
-    distance = np.sqrt( 
-        (row.jointHeadX - row.nextJointHeadX)**2.0 + 
-        (row.jointHeadY - row.nextJointHeadY)**2.0 + 
-        (row.jointHeadZ - row.nextJointHeadZ)**2.0
-    )
-    return distance
-
-def compute_distance_torso(row):
-    """Helper function to apply to dataframe rows, will compute 
-    torso joint distance moved between this and next reported torso
-    joint position.
-    """
-    distance = np.sqrt( 
-        (row.jointTorsoX - row.nextJointTorsoX)**2.0 + 
-        (row.jointTorsoY - row.nextJointTorsoY)**2.0 + 
-        (row.jointTorsoZ - row.nextJointTorsoZ)**2.0
-    )
-    return distance
-
 
         
 def extract_response_joint_displacements():
@@ -133,6 +126,7 @@ def extract_response_joint_displacements():
 
         # extract joint displacements for this response, we subtract
         # 1.0 seconds for delay from when cue is shown to when prompt
+        # and anohter 0.2 seconds which is buffer before cue,
         # is given, and of course subtract the reactionTime as that is the
         # time from when prompt shows till when they make their response.
         response_time = response.utcTime
@@ -140,35 +134,28 @@ def extract_response_joint_displacements():
         # if reaction time is 0 or NaN it means they didn't respond before timeout
         # use a full 1.5 seconds as the (non)reaction time in that case
         if pd.isnull(response.reactionTime):
-            start_time = response_time - 2.5
+            start_time = response_time - 2.7
         # otherwise use their actual reaction time to determine start of trial cue
         else: 
-            start_time = response_time - response.reactionTime - 1.0
+            start_time = response_time - response.reactionTime - 1.2
 
         # find all rows in joint dataframe with time between start and when response given
         mask = (joint_df.utcTime >= start_time) & (joint_df.utcTime <= response_time)
         displacement_df = joint_df[mask]
         displacement_df = displacement_df.reset_index(drop=True)
 
-        # add in columns but displaced in time by 1 so that we can easily calculate
-        # movement
-        next_df = displacement_df[['jointHeadX', 'jointHeadY', 'jointHeadZ', 'jointTorsoX', 'jointTorsoY', 'jointTorsoZ']].iloc[1:].reset_index(drop=True)
-        next_df.columns = ['nextJointHeadX', 'nextJointHeadY', 'nextJointHeadZ', 'nextJointTorsoX', 'nextJointTorsoY', 'nextJointTorsoZ']
-        displacement_df = pd.merge(displacement_df, next_df, left_index=True, right_index=True)
-
         # at this point the displacement dataframe has columns of the current and next joint
         # position in each row, so calculate distance that the joint moved now
         if len(displacement_df) == 0:
             print('    Error: no kinect data found: participant: ', response.participant, ' utcTime: ', response.utcTime)
 
-        else:
-            displacement_df['jointHeadDisplacement'] = displacement_df.apply(compute_distance_head, axis=1)
-            displacement_df['jointTorsoDisplacement'] = displacement_df.apply(compute_distance_torso, axis=1)
-
-            # now add the computed joint movement / displacements into the response_df
-            mask = (response_df.utcTime == response_time)
-            response_df.loc[mask, ['jointHeadDisplacement'] ] = displacement_df.jointHeadDisplacement.mean()
-            response_df.loc[mask, ['jointTorsoDisplacement'] ] = displacement_df.jointTorsoDisplacement.mean()
+        # now add the computed joint movement / displacements into the response_df
+        total_time = response_time - start_time
+        mask = (response_df.utcTime == response_time)
+        for joint in joint_list:
+            name = "%sDisplacement" % joint
+            displacement_rate = displacement_df[name].sum() / total_time
+            response_df.loc[mask, [name] ] = displacement_rate
     
     return response_df
 

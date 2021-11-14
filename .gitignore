@@ -1,3 +1,5 @@
 papers/_out/*
+*/.ipynb_checkpoints/*
 *#
 *~
+

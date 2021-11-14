@@ -62,7 +62,7 @@ def create_torso_response_figure(data_file, output_file):
                    data=df);
 
     # clip x axis to better see bulk of data
-    plt.xlim([0.0, 10.0])
+    #plt.xlim([0.0, 10.0])
 
     # add in labels and fix up y axis ticks/labels
     plt.xlabel('Average Joint Movement (torso joint)')

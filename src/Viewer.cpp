@@ -110,8 +110,8 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 	//outputFileName = "../data/" + participantNumber + "_task-switching-replication_XXXX_XXX_XXXX.csv";
 	outputFileName << "../data/"
 		       << participantNumber
-		       << "_task-switching-replication_"
-		       << put_time(&tm, "%Y_%b_%d_%H%M")
+		       << put_time(&tm, "_%Y_%b_%d_%H%M")
+		       << "-joint-positions"
 		       << ".csv";
 	  
 	outputFile.open(outputFileName.str().c_str());

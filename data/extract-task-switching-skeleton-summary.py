@@ -22,32 +22,6 @@ line, and normalized feature/column names.
 """
 
 
-def compute_distance_head(row):
-    """Helper function to apply to dataframe rows, will compute 
-    head joint distance moved between this and next reported head 
-    joint position.
-    """
-    distance = np.sqrt( 
-        (row.jointHeadX - row.nextJointHeadX)**2.0 + 
-        (row.jointHeadY - row.nextJointHeadY)**2.0 + 
-        (row.jointHeadZ - row.nextJointHeadZ)**2.0
-    )
-    return distance
-
-def compute_distance_torso(row):
-    """Helper function to apply to dataframe rows, will compute 
-    torso joint distance moved between this and next reported torso
-    joint position.
-    """
-    distance = np.sqrt( 
-        (row.jointTorsoX - row.nextJointTorsoX)**2.0 + 
-        (row.jointTorsoY - row.nextJointTorsoY)**2.0 + 
-        (row.jointTorsoZ - row.nextJointTorsoZ)**2.0
-    )
-    return distance
-
-
-
 def extract_task_switching_skeleton_data():
     """
     Extract skeleton tracking data points and summarize them.  Collect
@@ -63,8 +37,8 @@ def extract_task_switching_skeleton_data():
     initDf = True
     df = None
     
-    # find files matching raw PsychoPy subject trial/data name
-    file_pattern = "[0-9][0-9][0-9][0-9]_*_*_*_*_*"
+     # find files matching raw kinect tracker participant trial/data name
+    file_pattern = "[0-9][0-9][0-9][0-9]_*-joint-positions-displacements"
     raw_data_pattern = data_dir + "/" + file_pattern + ".csv"
     raw_data_file_list = glob.glob(raw_data_pattern)
     raw_data_file_list.sort()
@@ -85,15 +59,6 @@ def extract_task_switching_skeleton_data():
         end_time = subject_df.utcMillisecondsSinceEpoch[num_samples - 1]
         end_date = pd.to_datetime(end_time, unit='ms')
 
-        # compute head and torso movement for now, create new rows with next
-        # measurement, so can easily apply function to calculate distance
-        # between current and next reported x,y,z position
-        df_next = subject_df[['jointHeadX', 'jointHeadY', 'jointHeadZ', 'jointTorsoX', 'jointTorsoY', 'jointTorsoZ']].iloc[1:].reset_index(drop=True)
-        df_next.columns = ['nextJointHeadX', 'nextJointHeadY', 'nextJointHeadZ', 'nextJointTorsoX', 'nextJointTorsoY', 'nextJointTorsoZ']
-        subject_df = pd.merge(subject_df, df_next, left_index=True, right_index=True)
-        subject_df['jointHeadDisplacement'] = subject_df.apply(compute_distance_head, axis=1)
-        subject_df['jointTorsoDisplacement'] = subject_df.apply(compute_distance_torso, axis=1)
-        
         # now extract data to add to summary report
         minHeadDisplacement = subject_df.jointHeadDisplacement.min()
         maxHeadDisplacement = subject_df.jointHeadDisplacement.max()

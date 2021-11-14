@@ -4,10 +4,13 @@ SRC_DIR := .
 
 
 # raw data sources
-task_switching_skeleton_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9][0-9]_*_*_*_*_*.csv)
+joint_position_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9][0-9]_*-joint-positions.csv)
+
+# displacement data files
+displacement_data_files = $(patsubst %-joint-positions.csv,%-joint-positions-displacements.csv,${joint_position_raw_trials})
 
 # extracted / cleaned targets
-target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv ${DATA_DIR}/response-joint-displacements.csv
+target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv ${DATA_DIR}/response-joint-displacements.csv ${displacement_data_files}
 
 
 ## List of all valid targets in this sub project:                                             
@@ -24,7 +27,7 @@ all : $(target_data_files)
 ##              subject trials of task switching replication
 ##              skeleton tracking data
 ##
-${DATA_DIR}/task-switching-skeleton-summary.csv : ${SRC_DIR}/extract-task-switching-skeleton-summary.py ${task_switching_skeleton_raw_trials}
+${DATA_DIR}/task-switching-skeleton-summary.csv : ${SRC_DIR}/extract-task-switching-skeleton-summary.py ${displacement_data_files}
 	python $< --output $@                                                                 
 
 
@@ -33,8 +36,17 @@ ${DATA_DIR}/task-switching-skeleton-summary.csv : ${SRC_DIR}/extract-task-switch
 ##              joint position information for each subject response made
 ##              in a PsychoPy experiment file.
 ##
-${DATA_DIR}/response-joint-displacements.csv : ${SRC_DIR}/extract-response-joint-displacements.py ${task_switching_skeleton_raw_trials} task-switching-replication.csv
+${DATA_DIR}/response-joint-displacements.csv : ${SRC_DIR}/extract-response-joint-displacements.py ${displacement_data_files} task-switching-replication.csv
 	python $< --output $@                                                                 
+
+
+## XXXX_joint-displacements_YYYY_Mon_DD_HHMM.csv
+##            : Extract joint displacement (or movements) from kinect
+##              joint position information for each subject response made
+##              in a PsychoPy experiment file.
+##
+${DATA_DIR}/%-joint-positions-displacements.csv : ${SRC_DIR}/calculate-joint-displacements.py ${DATA_DIR}/%-joint-positions.csv
+	python $< --output $@ --input $(word 2,$^)
 
 
 ## clean      : DANGER: Remove all extracted / cleaned data files
