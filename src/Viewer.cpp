@@ -21,6 +21,7 @@
 using namespace std;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
+using std::chrono::microseconds;
 using std::chrono::system_clock;
 
 #if (ONI_PLATFORM == ONI_PLATFORM_MACOSX)
@@ -126,7 +127,7 @@ openni::Status SampleViewer::Init(int argc, char **argv)
 	// NOTE: the order of joint outputs needs to correspond to the JointType enumerated
 	//   type found in NiteEnums.h header file.  We iterate through the joints,
 	//   saving the x,y,z position of each, in the order defined in this enum.
-	outputFile << "userId,utcMillisecondsSinceEpoch,"
+	outputFile << "userId,utcMicrosecondsSinceEpoch,"
 		   << "jointHeadX,jointHeadY,jointHeadZ,"
 		   << "jointNeckX,jointNeckY,jointNeckZ,"
 		   << "jointLeftShoulderX,jointLeftShoulderY,jointLeftShoulderZ,"
@@ -395,12 +396,12 @@ void DrawSkeleton(nite::UserTracker* pUserTracker, const nite::UserData& userDat
 void SaveSkeletonData(nite::UserTracker* pUserTracker, const nite::UserData& userData)
 {
   //std::time_t secondsSinceEpoch = std::time(NULL);
-  auto millisecondsSinceEpoch = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+  auto microsecondsSinceEpoch = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
   nite::JointType jointType;
   nite::Skeleton userSkeleton = userData.getSkeleton();
   int userId = userData.getId();
 
-  outputFile << userId << ", " <<  millisecondsSinceEpoch;
+  outputFile << userId << ", " <<  microsecondsSinceEpoch;
   for (jointType = nite::JOINT_HEAD; jointType <= nite::JOINT_RIGHT_FOOT; jointType = nite::JointType(int(jointType) + 1) )
   {
     nite::SkeletonJoint joint = userSkeleton.getJoint(jointType);
