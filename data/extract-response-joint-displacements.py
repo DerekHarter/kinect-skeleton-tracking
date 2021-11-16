@@ -68,8 +68,8 @@ def get_joint_df(participant):
     file_pattern = data_dir + "/" + "%04d_*-joint-positions-displacements.csv" % participant
     file_list = glob.glob(file_pattern)
     if len(file_list) != 1:
-        print("Error: did not find exptected file or got multiple files for pattern: <", file_pattern, ">")
-        sys.exit(0)
+        print("Error: did not find expected file or got multiple files for pattern (skipping this subject): <", file_pattern, ">")
+        return None
 
     # load the file into a df if we found it
     data_file = file_list[0]
@@ -78,8 +78,8 @@ def get_joint_df(participant):
 
     # convert utc time stamp to seconds so we have same units as in the
     # subject response data
-    joint_df['utcTime'] = joint_df.utcMillisecondsSinceEpoch / 1000.0
-    
+    joint_df['utcTime'] = joint_df.utcMicrosecondsSinceEpoch / 1000000.0
+
     return joint_df
 
         
@@ -124,6 +124,10 @@ def extract_response_joint_displacements():
             print('Processing participant: %04d' % current_participant)
             joint_df = get_joint_df(current_participant)
 
+        # skip over missing/bad joint files
+        if joint_df is None:
+            continue
+            
         # extract joint displacements for this response, we subtract
         # 1.0 seconds for delay from when cue is shown to when prompt
         # and anohter 0.2 seconds which is buffer before cue,
@@ -147,8 +151,11 @@ def extract_response_joint_displacements():
         # at this point the displacement dataframe has columns of the current and next joint
         # position in each row, so calculate distance that the joint moved now
         if len(displacement_df) == 0:
-            print('    Error: no kinect data found: participant: ', response.participant, ' utcTime: ', response.utcTime)
-
+            print('    Error: no kinect data found: participant: ', response.participant)
+            print('           utcTime: ', response.utcTime)
+            print('        start_time: ', start_time)
+            print('     response_time: ', response_time)
+            
         # now add the computed joint movement / displacements into the response_df
         total_time = response_time - start_time
         mask = (response_df.utcTime == response_time)
@@ -156,6 +163,9 @@ def extract_response_joint_displacements():
             name = "%sDisplacement" % joint
             displacement_rate = displacement_df[name].sum() / total_time
             response_df.loc[mask, [name] ] = displacement_rate
+
+    # if subjects were dropped/skipped there displacment measurements will end up as NaN.  Drop them
+    response_df = response_df.dropna()
     
     return response_df
 
