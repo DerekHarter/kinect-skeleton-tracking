@@ -54,10 +54,10 @@ def extract_task_switching_skeleton_data():
         #subject_df = pd.read_csv(raw_data_file, names=feature_names)
         subject_df = pd.read_csv(raw_data_file)
         num_samples = subject_df.shape[0]
-        start_time = subject_df.utcMillisecondsSinceEpoch[0]
-        start_date = pd.to_datetime(start_time, unit='ms')
-        end_time = subject_df.utcMillisecondsSinceEpoch[num_samples - 1]
-        end_date = pd.to_datetime(end_time, unit='ms')
+        start_time = subject_df.utcMicrosecondsSinceEpoch[0]
+        start_date = pd.to_datetime(start_time, unit='us')
+        end_time = subject_df.utcMicrosecondsSinceEpoch[num_samples - 1]
+        end_date = pd.to_datetime(end_time, unit='us')
 
         # now extract data to add to summary report
         minHeadDisplacement = subject_df.jointHeadDisplacement.min()

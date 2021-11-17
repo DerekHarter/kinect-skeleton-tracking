@@ -61,8 +61,19 @@ def process_participant_joint_data(raw_kinect_file):
     # get raw joint data into data frame to process
     print('kinect joint data file: ', raw_kinect_file)
     joint_df = pd.read_csv(raw_kinect_file)
-    num_samples, num_features = joint_df.shape
 
+    # look out for if we got multiple users tracked, this causes problems because
+    # we assume all joints for all users are not mixed together
+    num_users = len(joint_df.userId.unique())
+    if num_users != 1:
+        print('   Error: multiple user ids detected: ', joint_df.userId.unique())
+        #sys.exit(0)
+        # lets try just dropping the additional user ids?
+        mask = (joint_df.userId == 1)
+        joint_df = joint_df[mask]
+
+    num_samples, num_features = joint_df.shape
+        
     # add columns for displacment results
     for joint in joint_list:
         name = "%sDisplacement" % joint

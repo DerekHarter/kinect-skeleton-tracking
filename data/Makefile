@@ -10,7 +10,8 @@ joint_position_raw_trials = $(wildcard ${RAW_DATA_DIR}/[0-9][0-9][0-9][0-9]_*-jo
 displacement_data_files = $(patsubst %-joint-positions.csv,%-joint-positions-displacements.csv,${joint_position_raw_trials})
 
 # extracted / cleaned targets
-target_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv ${DATA_DIR}/response-joint-displacements.csv ${displacement_data_files}
+summary_data_files = ${DATA_DIR}/task-switching-skeleton-summary.csv ${DATA_DIR}/response-joint-displacements.csv  
+target_data_files = ${summary_data_files} ${displacement_data_files}
 
 
 ## List of all valid targets in this sub project:                                             
@@ -50,10 +51,12 @@ ${DATA_DIR}/%-joint-positions-displacements.csv : ${SRC_DIR}/calculate-joint-dis
 
 
 ## clean      : DANGER: Remove all extracted / cleaned data files
-##
+##              Currently only removing the summary csv files, don't delete the individual
+##              joint displacements as they take quite a bit of time to regenerate and
+##              shouldn't need to be regenerated after initial creation.
 .PHONY : clean
 clean  :
-	rm -rf $(target_data_files) *~
+	rm -rf $(summary_data_files) *~
 
 ## help       : Get all build targets supported by this build.
 ##
