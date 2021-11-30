@@ -47,6 +47,9 @@ def create_torso_response_figure(data_file, output_file):
     # map to numeric value for scatterplot
     df['correctValue'] = df.correct.map(correct_map)
 
+    # convert joint torso displacement rate to cm/sec, currently mm/sec
+    df['jointTorsoDisplacement'] = df.jointTorsoDisplacement / 10.0
+    
     # and the y_jitter doesn't seem to be implemented as of now for
     # lmplot, so add our own jitter
     num_samples, num_features = df.shape
@@ -65,7 +68,7 @@ def create_torso_response_figure(data_file, output_file):
     #plt.xlim([0.0, 10.0])
 
     # add in labels and fix up y axis ticks/labels
-    plt.xlabel('Average Joint Movement (torso joint)')
+    plt.xlabel('Joint Movement Rate (cm/sec torso joint)')
     plt.ylabel('response correct')
     plt.yticks(ticks=[0.0, 1.0], labels=['no', 'yes'])
 

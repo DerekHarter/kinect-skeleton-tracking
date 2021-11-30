@@ -68,10 +68,21 @@ def process_participant_joint_data(raw_kinect_file):
     if num_users != 1:
         print('   Error: multiple user ids detected: ', joint_df.userId.unique())
         #sys.exit(0)
-        # lets try just dropping the additional user ids?
+        # lets try just dropping the additional user ids?, need to also reset index or else
+        # will have problems if/when we iterate to locations where indexes were removed
         mask = (joint_df.userId == 1)
         joint_df = joint_df[mask]
+        joint_df = joint_df.reset_index()
 
+    # check if any missing data, there shouldn't be any but we are getting some sometimes
+    # when there are multiple users in the kinect tracking?
+    num_missing_rows = joint_df.isna().any(axis=1).sum()
+    if num_missing_rows != 0:
+        print('    Error: detected missing data in kinect joint caputre file: ', raw_kinect_file,
+              ' number of missing rows: ', num_missing_rows)
+        # drop the missing rows as they are causing problems
+        #joint_df = joint_df.dropna()
+        
     num_samples, num_features = joint_df.shape
         
     # add columns for displacment results
@@ -90,7 +101,13 @@ def process_participant_joint_data(raw_kinect_file):
 
         # add displacement measurements to this samples position data
         joint_df.loc[sample_idx, list(displacement_dict.keys())] = list(displacement_dict.values())
-        
+
+        if joint_df.loc[sample_idx, :].isna().any():
+            print('detected missing displacements: ', joint_df.loc[sample_idx, :])
+            print('previous row: ', prev)
+            print('current row: ', curr)
+            sys.exit(0)
+            
         # slow operation, show progress
         if sample_idx % 1000 == 0:
             print('     Processing sample %05d / %05d' % (sample_idx, num_samples),

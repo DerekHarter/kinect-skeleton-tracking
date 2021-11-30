@@ -41,16 +41,22 @@ def generate_subject_summary_df(data_file):
         'endDate',
         'minHeadDisplacement',
         'maxHeadDisplacement',
+        'meanHeadDisplacement',
         'minTorsoDisplacement',
         'maxTorsoDisplacement',
+        'meanTorsoDisplacement',
     ]
     df = df.drop(drop_columns, axis=1)
 
     # format datetime for table
     df['startDate'] = pd.to_datetime(df['startDate']).dt.strftime('%Y-%m-%d %H:%M')
 
+    # change the rates to cm / seconds
+    df['rateHeadDisplacement'] = df.rateHeadDisplacement / 10.0
+    df['rateTorsoDisplacement'] = df.rateTorsoDisplacement / 10.0
+    
     # rearrange column order a bit
-    df = df[ ['subjectId', 'startDate', 'samples', 'meanHeadDisplacement', 'meanTorsoDisplacement'] ]
+    df = df[ ['subjectId', 'startDate', 'samples', 'rateHeadDisplacement', 'rateTorsoDisplacement'] ]
     
     # return the resulting dataframe
     return df
@@ -64,7 +70,7 @@ def save_table(subject_summary_df, output_file):
     subject_summary_df - A dataframe of the summarized subject information.
     output_file - The name of the file to save the table into.
     """
-    caption = "Summary of experiment participants results.  Number of samples, and the average head and torso displacement during experiment are shown."
+    caption = "Summary of experiment participants results.  Number of samples, and the head and torso displacement rates (cm / sec) during experiment are shown."
     label = "table-subject-summary"
     header = [
         'part',

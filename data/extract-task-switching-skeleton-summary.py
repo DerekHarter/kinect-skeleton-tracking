@@ -58,14 +58,17 @@ def extract_task_switching_skeleton_data():
         start_date = pd.to_datetime(start_time, unit='us')
         end_time = subject_df.utcMicrosecondsSinceEpoch[num_samples - 1]
         end_date = pd.to_datetime(end_time, unit='us')
-
+        total_time = (end_time - start_time) / 1000000.0 # total time in seconds
+        
         # now extract data to add to summary report
         minHeadDisplacement = subject_df.jointHeadDisplacement.min()
         maxHeadDisplacement = subject_df.jointHeadDisplacement.max()
         meanHeadDisplacement = subject_df.jointHeadDisplacement.mean()
+        rateHeadDisplacement = subject_df.jointHeadDisplacement.sum() / total_time
         minTorsoDisplacement = subject_df.jointTorsoDisplacement.min()
         maxTorsoDisplacement = subject_df.jointTorsoDisplacement.max()
         meanTorsoDisplacement = subject_df.jointTorsoDisplacement.mean()
+        rateTorsoDisplacement = subject_df.jointTorsoDisplacement.sum() / total_time
         
         subject_dict = {
             'subjectId': [subject_id],
@@ -77,9 +80,11 @@ def extract_task_switching_skeleton_data():
             'minHeadDisplacement': [minHeadDisplacement],
             'maxHeadDisplacement': [maxHeadDisplacement],
             'meanHeadDisplacement': [meanHeadDisplacement],
+            'rateHeadDisplacement': [rateHeadDisplacement],
             'minTorsoDisplacement': [minTorsoDisplacement],
             'maxTorsoDisplacement': [maxTorsoDisplacement],
             'meanTorsoDisplacement': [meanTorsoDisplacement],
+            'rateTorsoDisplacement': [rateTorsoDisplacement],
         }
 
         if initDf:

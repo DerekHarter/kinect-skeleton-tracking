@@ -37,6 +37,9 @@ def create_torso_reaction_time_figure(data_file, output_file):
     # reaction times can be missing if didn't respond, drop them?
     df = df.dropna()
 
+    # convert joint torso displacement rate to cm/sec, currently mm/sec
+    df['jointTorsoDisplacement'] = df.jointTorsoDisplacement / 10.0
+    
     # using seaborn high-level df, visualize accuracy by posture, and
     # using the hue (color) to split by congruent/incongruent
     sb.scatterplot(
@@ -51,7 +54,7 @@ def create_torso_reaction_time_figure(data_file, output_file):
     #plt.xlim([0.0, 1000.0])
 
     # add figure labels
-    plt.xlabel('Average Joint Movement (torso joint)')
+    plt.xlabel('Joint Movement Rate (cm/sec torso joint)')
     plt.ylabel('reaction time (sec)')
     
     # save the resulting figure
